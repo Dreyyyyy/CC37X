@@ -10,7 +10,6 @@ Este repositório contém as versões do trabalho da diciplina, no qual o tema f
 e atualmente conta com a interface de usuário, carrinho de compras e dados estáticos para fins de testes.
 
 ## Bugs conhecidos:
-* Carrinho não atualiza a interface na mesma hora, é necessário entrar e sair do mesmo para atualizá-lo;
 * Box para printar o registro bem sucedido é sempre vermelho, independente de estar certo ou errado.
 
 ## Qual versão é a mais recente?

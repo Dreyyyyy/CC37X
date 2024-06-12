@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:informatic_store/models/product_model.dart';
 import 'package:informatic_store/controllers/cart_controller.dart';
 
-class CartScreen extends StatelessWidget {
-  final CartController cartController; // cria uma instância do carrinho
+class CartScreen extends StatefulWidget {
+  final CartController cartController;
 
   CartScreen({required this.cartController});
 
+  @override
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,18 +21,19 @@ class CartScreen extends StatelessWidget {
         title: Text('Carrinho'),
       ),
       body: ListView.builder(
-        itemCount: cartController.cart.items.length,
+        itemCount: widget.cartController.cart.items.length,
         itemBuilder: (context, index) {
-          Product product = cartController.cart.items[index];
+          Product product = widget.cartController.cart.items[index];
           return ListTile(
             leading: Image.asset(product.imageUrl),
             title: Text(product.name),
-            subtitle: Text('R\$${product.price.toString()}'),
+            subtitle: Text('R\$${product.price.toStringAsFixed(2)}'),
             trailing: IconButton(
               icon: Icon(Icons.remove_shopping_cart),
               onPressed: () {
-                cartController
-                    .removeItemFromCart(product); // remove item do carrinho
+                setState(() {
+                  widget.cartController.removeItemFromCart(product);
+                });
               },
             ),
           );
@@ -40,10 +46,12 @@ class CartScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                  'Total: R\$${cartController.cart.totalPrice.toStringAsFixed(2)}'),
+                  'Total: R\$${widget.cartController.cart.totalPrice.toStringAsFixed(2)}'),
               ElevatedButton(
                 onPressed: () {
-                  cartController.clearCart(); // Limpa carrinho
+                  setState(() {
+                    widget.cartController.clearCart();
+                  });
                 },
                 child: Text('Esvaziar Carrinho'),
               ),

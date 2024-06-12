@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:informatic_store/controllers/product_controller.dart';
 import 'package:informatic_store/controllers/cart_controller.dart';
 import 'package:informatic_store/models/product_model.dart';
+import 'package:informatic_store/models/scanner_model.dart'; // Assuming Scanner is defined here
 
 class ProductScreen extends StatelessWidget {
   final ProductController _productController = ProductController();
@@ -11,8 +12,6 @@ class ProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Product> products = _productController.getAllProducts();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Produtos'),
@@ -25,18 +24,47 @@ class ProductScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          Product product = products[index];
-          return ListTile(
-            leading: Image.asset(product.imageUrl),
-            title: Text(product.name),
-            subtitle: Text('R\$${product.price.toString()}'),
-            onTap: () {
-              _showProductDetails(context, product);
-            },
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.qr_code),
+        backgroundColor: Color.fromRGBO(255, 255, 255, 0.973),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Scanner()), // Assuming Scanner widget exists
           );
+        },
+      ),
+      body: FutureBuilder<List<Product>>(
+        future: _productController.getAllProducts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erro ao carregar produtos'));
+          } else {
+            List<Product> products = snapshot.data ?? [];
+            return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                Product product = products[index];
+                return ListTile(
+                  leading: SizedBox(
+                    height: 60, // Adjust the height as per your requirement
+                    width: 60, // Adjust the width as per your requirement
+                    child: Image.asset(
+                      product.imageUrl,
+                      fit: BoxFit.cover, // Use cover to fill the box without distortion
+                    ),
+                  ),
+                  title: Text(product.name),
+                  subtitle: Text('R\$${product.price.toStringAsFixed(2)}'),
+                  onTap: () {
+                    _showProductDetails(context, product);
+                  },
+                );
+              },
+            );
+          }
         },
       ),
     );
@@ -52,10 +80,17 @@ class ProductScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(product.imageUrl),
+              SizedBox(
+                height: 200, // Adjust the height as per your requirement
+                width: double.infinity,
+                child: Image.asset(
+                  product.imageUrl,
+                  fit: BoxFit.cover, // Use cover to fill the box without distortion
+                ),
+              ),
               SizedBox(height: 10),
               Text(product.description),
-              Text('R\$${product.price.toString()}'),
+              Text('R\$${product.price.toStringAsFixed(2)}'),
             ],
           ),
           actions: [
